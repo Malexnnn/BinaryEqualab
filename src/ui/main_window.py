@@ -456,8 +456,9 @@ class MatrixWidget(QWidget):
     def _build_matrix_grid(self):
         """Construye la cuadricula de inputs."""
         # Clear existing
-        for cell in self.cells:
-            cell.deleteLater()
+        for row in self.cells:
+            for cell in row:
+                cell.deleteLater()
         self.cells.clear()
         
         # Clear layout
