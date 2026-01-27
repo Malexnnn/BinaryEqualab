@@ -686,6 +686,8 @@ class GraphingWidget(QWidget):
             result = integrate(expr, (x, self.x_min, self.x_max))
             area = float(N(result))
             self.analysis_output.setText(f"Area [{self.x_min}, {self.x_max}]: {area:.4f}")
+        except Exception as e:
+            self.analysis_output.setText(f"Error: {str(e)}")
 
 
 class MatrixWidget(QWidget):
