@@ -97,6 +97,53 @@ async def health_check():
     return {"status": "ok", "service": "binary-equalab-api"}
 
 # ============================================================================
+# Auth Endpoints
+# ============================================================================
+
+from auth import get_supabase, get_current_user, require_auth, User, AuthRequest, AuthResponse
+
+@app.post("/api/auth/signup", response_model=AuthResponse)
+async def signup(req: AuthRequest):
+    """Register a new user."""
+    try:
+        supabase = get_supabase()
+        response = supabase.auth.sign_up({
+            "email": req.email,
+            "password": req.password
+        })
+        if response.user:
+            return AuthResponse(
+                access_token=response.session.access_token if response.session else "",
+                user=User(id=response.user.id, email=response.user.email or "")
+            )
+        raise HTTPException(status_code=400, detail="Signup failed")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/api/auth/login", response_model=AuthResponse)
+async def login(req: AuthRequest):
+    """Login with email and password."""
+    try:
+        supabase = get_supabase()
+        response = supabase.auth.sign_in_with_password({
+            "email": req.email,
+            "password": req.password
+        })
+        if response.user and response.session:
+            return AuthResponse(
+                access_token=response.session.access_token,
+                user=User(id=response.user.id, email=response.user.email or "")
+            )
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=str(e))
+
+@app.get("/api/auth/me")
+async def get_me(user: User = Depends(require_auth)):
+    """Get current user info (requires auth)."""
+    return {"user": user}
+
+# ============================================================================
 # Math Endpoints
 # ============================================================================
 
@@ -104,7 +151,7 @@ async def health_check():
 async def simplify_expression(req: ExpressionRequest):
     try:
         result = engine.simplify(req.expression)
-        latex = engine.to_latex(req.expression)
+        latex = engine.to_latex(str(result))  # LaTeX of RESULT, not input
         return MathResponse(result=str(result), latex=str(latex))
     except Exception as e:
         return MathResponse(result="", success=False, error=str(e))
