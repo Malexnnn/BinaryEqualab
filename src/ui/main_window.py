@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import (
     QTabWidget, QToolBar, QStatusBar, QLabel,
     QLineEdit, QTextEdit, QPushButton, QSplitter,
     QListWidget, QListWidgetItem, QStackedWidget,
-    QFrame, QSizePolicy
+    QFrame, QSizePolicy, QComboBox
 )
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QFont, QAction, QIcon
@@ -349,14 +349,19 @@ class GraphingWidget(QWidget):
 
 
 class MatrixWidget(QWidget):
-    """Widget del modo Matrices con editor y operaciones."""
+    """Widget del modo Matrices con dos matrices (A y B) y operaciones combinadas."""
     
     def __init__(self, parent=None):
         super().__init__(parent)
         self.engine = EquaEngine()
-        self.rows = 3
-        self.cols = 3
-        self.cells = []
+        # Matrix A
+        self.rows_a = 3
+        self.cols_a = 3
+        self.cells_a = []
+        # Matrix B
+        self.rows_b = 3
+        self.cols_b = 3
+        self.cells_b = []
         self._setup_ui()
     
     def _setup_ui(self):
@@ -372,73 +377,103 @@ class MatrixWidget(QWidget):
         """)
         layout.addWidget(header)
         
-        # Size Controls
-        size_frame = QFrame()
-        size_layout = QHBoxLayout(size_frame)
-        size_layout.setContentsMargins(0, 0, 0, 0)
+        # Matrices Container (A and B side by side)
+        matrices_frame = QFrame()
+        matrices_layout = QHBoxLayout(matrices_frame)
+        matrices_layout.setSpacing(24)
         
-        size_layout.addWidget(QLabel("Size:"))
-        self.rows_input = QLineEdit("3")
-        self.rows_input.setFixedWidth(50)
-        self.rows_input.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        size_layout.addWidget(self.rows_input)
+        # Matrix A Section
+        self.matrix_a_widget = self._create_matrix_section("A", "a")
+        matrices_layout.addWidget(self.matrix_a_widget)
         
-        size_layout.addWidget(QLabel("×"))
-        self.cols_input = QLineEdit("3")
-        self.cols_input.setFixedWidth(50)
-        self.cols_input.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        size_layout.addWidget(self.cols_input)
+        # Matrix B Section
+        self.matrix_b_widget = self._create_matrix_section("B", "b")
+        matrices_layout.addWidget(self.matrix_b_widget)
         
-        apply_btn = QPushButton("Apply")
-        apply_btn.clicked.connect(self._resize_matrix)
-        size_layout.addWidget(apply_btn)
+        matrices_layout.addStretch()
+        layout.addWidget(matrices_frame)
         
-        size_layout.addStretch()
-        layout.addWidget(size_frame)
+        # Build initial grids
+        self._build_matrix_grid("a")
+        self._build_matrix_grid("b")
         
-        # Matrix Grid Container
-        self.grid_container = QFrame()
-        self.grid_container.setStyleSheet(f"""
-            QFrame {{
-                background-color: {AuroraPalette.BACKGROUND_DARK};
-                border: 1px solid {AuroraPalette.BORDER};
-                border-radius: 8px;
-                padding: 16px;
-            }}
-        """)
-        self.grid_layout = QHBoxLayout(self.grid_container)
-        self.grid_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.grid_container)
+        # Single Matrix Operations
+        single_ops_label = QLabel("Single Matrix Operations:")
+        single_ops_label.setStyleSheet("font-weight: bold; margin-top: 8px;")
+        layout.addWidget(single_ops_label)
         
-        self._build_matrix_grid()
+        single_ops_frame = QFrame()
+        single_ops_layout = QHBoxLayout(single_ops_frame)
+        single_ops_layout.setContentsMargins(0, 0, 0, 0)
         
-        # Operations Toolbar
-        ops_frame = QFrame()
-        ops_layout = QHBoxLayout(ops_frame)
-        ops_layout.setContentsMargins(0, 8, 0, 0)
+        # Selector for which matrix
+        single_ops_layout.addWidget(QLabel("On:"))
+        self.matrix_selector = QComboBox()
+        self.matrix_selector.addItems(["Matrix A", "Matrix B"])
+        self.matrix_selector.setFixedWidth(100)
+        single_ops_layout.addWidget(self.matrix_selector)
         
-        operations = [
-            ("det(A)", self._calc_det),
-            ("inv(A)", self._calc_inv),
-            ("transpose(A)", self._calc_transpose),
-            ("eigenvals(A)", self._calc_eigenvals),
-            ("rref(A)", self._calc_rref),
+        single_operations = [
+            ("det", self._calc_det),
+            ("inv", self._calc_inv),
+            ("T", self._calc_transpose),
+            ("eigenvals", self._calc_eigenvals),
+            ("rref", self._calc_rref),
+            ("rank", self._calc_rank),
+            ("trace", self._calc_trace),
         ]
         
-        for label, func in operations:
+        for label, func in single_operations:
             btn = QPushButton(label)
             btn.setProperty("class", "secondary")
+            btn.setFixedWidth(70)
             btn.clicked.connect(func)
-            ops_layout.addWidget(btn)
+            single_ops_layout.addWidget(btn)
         
-        ops_layout.addStretch()
-        layout.addWidget(ops_frame)
+        single_ops_layout.addStretch()
+        layout.addWidget(single_ops_frame)
+        
+        # Combined Operations (A op B)
+        combined_ops_label = QLabel("Combined Operations (A ⊕ B):")
+        combined_ops_label.setStyleSheet("font-weight: bold; margin-top: 8px;")
+        layout.addWidget(combined_ops_label)
+        
+        combined_ops_frame = QFrame()
+        combined_ops_layout = QHBoxLayout(combined_ops_frame)
+        combined_ops_layout.setContentsMargins(0, 0, 0, 0)
+        
+        combined_operations = [
+            ("A + B", self._calc_add),
+            ("A - B", self._calc_sub),
+            ("A × B", self._calc_mul),
+            ("A ÷ B", self._calc_div),  # A × inv(B)
+            ("A | B", self._calc_augment),  # Augmented matrix
+        ]
+        
+        for label, func in combined_operations:
+            btn = QPushButton(label)
+            btn.setProperty("class", "primary")
+            btn.setFixedWidth(70)
+            btn.clicked.connect(func)
+            combined_ops_layout.addWidget(btn)
+        
+        # Copy result buttons
+        combined_ops_layout.addWidget(QLabel("  Copy to:"))
+        copy_a_btn = QPushButton("→ A")
+        copy_a_btn.clicked.connect(lambda: self._copy_result_to("a"))
+        combined_ops_layout.addWidget(copy_a_btn)
+        copy_b_btn = QPushButton("→ B")
+        copy_b_btn.clicked.connect(lambda: self._copy_result_to("b"))
+        combined_ops_layout.addWidget(copy_b_btn)
+        
+        combined_ops_layout.addStretch()
+        layout.addWidget(combined_ops_frame)
         
         # Results Area
         self.results = QTextEdit()
         self.results.setReadOnly(True)
-        self.results.setMaximumHeight(150)
-        self.results.setPlaceholderText("Resultados aparecen aqui...")
+        self.results.setMaximumHeight(180)
+        self.results.setPlaceholderText("Resultados aparecen aquí...")
         self.results.setStyleSheet(f"""
             QTextEdit {{
                 font-family: 'Consolas', monospace;
@@ -451,39 +486,103 @@ class MatrixWidget(QWidget):
         """)
         layout.addWidget(self.results)
         
-        layout.addStretch()
+        # Store last result for copy
+        self.last_result = None
     
-    def _build_matrix_grid(self):
-        """Construye la cuadricula de inputs."""
+    def _create_matrix_section(self, name: str, key: str) -> QFrame:
+        """Creates a matrix section with label, size controls, and grid."""
+        section = QFrame()
+        section.setStyleSheet(f"""
+            QFrame {{
+                background-color: {AuroraPalette.BACKGROUND_DARK};
+                border: 1px solid {AuroraPalette.BORDER};
+                border-radius: 8px;
+                padding: 12px;
+            }}
+        """)
+        layout = QVBoxLayout(section)
+        layout.setSpacing(8)
+        
+        # Header
+        header = QLabel(f"Matrix {name}")
+        header.setStyleSheet(f"font-size: 16px; font-weight: bold; color: {AuroraPalette.PRIMARY};")
+        layout.addWidget(header)
+        
+        # Size controls
+        size_frame = QFrame()
+        size_frame.setStyleSheet("background: transparent; border: none;")
+        size_layout = QHBoxLayout(size_frame)
+        size_layout.setContentsMargins(0, 0, 0, 0)
+        
+        rows_input = QLineEdit("3")
+        rows_input.setFixedWidth(40)
+        rows_input.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        setattr(self, f"rows_input_{key}", rows_input)
+        
+        cols_input = QLineEdit("3")
+        cols_input.setFixedWidth(40)
+        cols_input.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        setattr(self, f"cols_input_{key}", cols_input)
+        
+        size_layout.addWidget(rows_input)
+        size_layout.addWidget(QLabel("×"))
+        size_layout.addWidget(cols_input)
+        
+        apply_btn = QPushButton("✓")
+        apply_btn.setFixedWidth(30)
+        apply_btn.clicked.connect(lambda: self._resize_matrix(key))
+        size_layout.addWidget(apply_btn)
+        size_layout.addStretch()
+        
+        layout.addWidget(size_frame)
+        
+        # Grid container
+        grid_container = QFrame()
+        grid_container.setStyleSheet("background: transparent; border: none;")
+        grid_layout = QHBoxLayout(grid_container)
+        grid_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        setattr(self, f"grid_layout_{key}", grid_layout)
+        setattr(self, f"grid_container_{key}", grid_container)
+        
+        layout.addWidget(grid_container)
+        return section
+    
+    def _build_matrix_grid(self, key: str):
+        """Builds the matrix grid for A or B."""
+        rows = getattr(self, f"rows_{key}")
+        cols = getattr(self, f"cols_{key}")
+        cells = getattr(self, f"cells_{key}")
+        grid_layout = getattr(self, f"grid_layout_{key}")
+        
         # Clear existing
-        for row in self.cells:
+        for row in cells:
             for cell in row:
                 cell.deleteLater()
-        self.cells.clear()
+        cells.clear()
         
-        # Clear layout
-        while self.grid_layout.count():
-            item = self.grid_layout.takeAt(0)
+        while grid_layout.count():
+            item = grid_layout.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
         
         from PyQt6.QtWidgets import QGridLayout
         grid = QWidget()
         grid_inner = QGridLayout(grid)
-        grid_inner.setSpacing(4)
+        grid_inner.setSpacing(3)
         
-        for r in range(self.rows):
+        for r in range(rows):
             row_cells = []
-            for c in range(self.cols):
+            for c in range(cols):
                 cell = QLineEdit("0")
-                cell.setFixedSize(50, 40)
+                cell.setFixedSize(45, 35)
                 cell.setAlignment(Qt.AlignmentFlag.AlignCenter)
                 cell.setStyleSheet(f"""
                     QLineEdit {{
                         background-color: {AuroraPalette.BACKGROUND_LIGHT};
                         border: 1px solid {AuroraPalette.BORDER};
-                        border-radius: 4px;
+                        border-radius: 3px;
                         font-family: 'Consolas', monospace;
+                        font-size: 12px;
                     }}
                     QLineEdit:focus {{
                         border-color: {AuroraPalette.SECONDARY};
@@ -491,25 +590,29 @@ class MatrixWidget(QWidget):
                 """)
                 grid_inner.addWidget(cell, r, c)
                 row_cells.append(cell)
-            self.cells.append(row_cells)
+            cells.append(row_cells)
         
-        self.grid_layout.addWidget(grid)
+        grid_layout.addWidget(grid)
+        setattr(self, f"cells_{key}", cells)
     
-    def _resize_matrix(self):
-        """Redimensiona la matriz."""
+    def _resize_matrix(self, key: str):
+        """Resizes a matrix grid."""
         try:
-            self.rows = int(self.rows_input.text())
-            self.cols = int(self.cols_input.text())
-            self.rows = max(1, min(10, self.rows))
-            self.cols = max(1, min(10, self.cols))
-            self._build_matrix_grid()
+            rows_input = getattr(self, f"rows_input_{key}")
+            cols_input = getattr(self, f"cols_input_{key}")
+            rows = max(1, min(8, int(rows_input.text())))
+            cols = max(1, min(8, int(cols_input.text())))
+            setattr(self, f"rows_{key}", rows)
+            setattr(self, f"cols_{key}", cols)
+            self._build_matrix_grid(key)
         except ValueError:
             pass
     
-    def _get_matrix_values(self):
-        """Obtiene los valores de la matriz como lista de listas."""
+    def _get_matrix_values(self, key: str):
+        """Gets matrix values as list of lists."""
+        cells = getattr(self, f"cells_{key}")
         values = []
-        for row in self.cells:
+        for row in cells:
             row_vals = []
             for cell in row:
                 try:
@@ -519,50 +622,166 @@ class MatrixWidget(QWidget):
             values.append(row_vals)
         return values
     
-    def _get_sympy_matrix(self):
-        """Obtiene un objeto Matrix de SymPy."""
+    def _get_sympy_matrix(self, key: str):
+        """Gets SymPy Matrix object."""
         from sympy import Matrix
-        return Matrix(self._get_matrix_values())
+        return Matrix(self._get_matrix_values(key))
     
+    def _selected_matrix_key(self) -> str:
+        """Returns 'a' or 'b' based on selector."""
+        return "a" if self.matrix_selector.currentIndex() == 0 else "b"
+    
+    def _selected_matrix_name(self) -> str:
+        """Returns 'A' or 'B' based on selector."""
+        return "A" if self.matrix_selector.currentIndex() == 0 else "B"
+    
+    # Single matrix operations
     def _calc_det(self):
         try:
-            m = self._get_sympy_matrix()
+            key = self._selected_matrix_key()
+            name = self._selected_matrix_name()
+            m = self._get_sympy_matrix(key)
             result = m.det()
-            self.results.append(f">>> det(A)\n    {result}\n")
+            self.results.append(f">>> det({name}) = {result}\n")
         except Exception as e:
             self.results.append(f"Error: {e}\n")
     
     def _calc_inv(self):
         try:
-            m = self._get_sympy_matrix()
+            key = self._selected_matrix_key()
+            name = self._selected_matrix_name()
+            m = self._get_sympy_matrix(key)
             result = m.inv()
-            self.results.append(f">>> inv(A)\n    {result}\n")
+            self.last_result = result
+            self.results.append(f">>> inv({name}) =\n{result}\n")
         except Exception as e:
             self.results.append(f"Error: {e}\n")
     
     def _calc_transpose(self):
         try:
-            m = self._get_sympy_matrix()
+            key = self._selected_matrix_key()
+            name = self._selected_matrix_name()
+            m = self._get_sympy_matrix(key)
             result = m.T
-            self.results.append(f">>> transpose(A)\n    {result}\n")
+            self.last_result = result
+            self.results.append(f">>> {name}ᵀ =\n{result}\n")
         except Exception as e:
             self.results.append(f"Error: {e}\n")
     
     def _calc_eigenvals(self):
         try:
-            m = self._get_sympy_matrix()
+            key = self._selected_matrix_key()
+            name = self._selected_matrix_name()
+            m = self._get_sympy_matrix(key)
             result = m.eigenvals()
-            self.results.append(f">>> eigenvals(A)\n    {result}\n")
+            self.results.append(f">>> eigenvals({name}) = {result}\n")
         except Exception as e:
             self.results.append(f"Error: {e}\n")
     
     def _calc_rref(self):
         try:
-            m = self._get_sympy_matrix()
+            key = self._selected_matrix_key()
+            name = self._selected_matrix_name()
+            m = self._get_sympy_matrix(key)
             result, pivots = m.rref()
-            self.results.append(f">>> rref(A)\n    {result}\n    Pivots: {pivots}\n")
+            self.last_result = result
+            self.results.append(f">>> rref({name}) =\n{result}\nPivots: {pivots}\n")
         except Exception as e:
             self.results.append(f"Error: {e}\n")
+    
+    def _calc_rank(self):
+        try:
+            key = self._selected_matrix_key()
+            name = self._selected_matrix_name()
+            m = self._get_sympy_matrix(key)
+            result = m.rank()
+            self.results.append(f">>> rank({name}) = {result}\n")
+        except Exception as e:
+            self.results.append(f"Error: {e}\n")
+    
+    def _calc_trace(self):
+        try:
+            key = self._selected_matrix_key()
+            name = self._selected_matrix_name()
+            m = self._get_sympy_matrix(key)
+            result = m.trace()
+            self.results.append(f">>> trace({name}) = {result}\n")
+        except Exception as e:
+            self.results.append(f"Error: {e}\n")
+    
+    # Combined operations
+    def _calc_add(self):
+        try:
+            a = self._get_sympy_matrix("a")
+            b = self._get_sympy_matrix("b")
+            result = a + b
+            self.last_result = result
+            self.results.append(f">>> A + B =\n{result}\n")
+        except Exception as e:
+            self.results.append(f"Error: {e}\n")
+    
+    def _calc_sub(self):
+        try:
+            a = self._get_sympy_matrix("a")
+            b = self._get_sympy_matrix("b")
+            result = a - b
+            self.last_result = result
+            self.results.append(f">>> A - B =\n{result}\n")
+        except Exception as e:
+            self.results.append(f"Error: {e}\n")
+    
+    def _calc_mul(self):
+        try:
+            a = self._get_sympy_matrix("a")
+            b = self._get_sympy_matrix("b")
+            result = a * b
+            self.last_result = result
+            self.results.append(f">>> A × B =\n{result}\n")
+        except Exception as e:
+            self.results.append(f"Error: {e}\n")
+    
+    def _calc_div(self):
+        try:
+            a = self._get_sympy_matrix("a")
+            b = self._get_sympy_matrix("b")
+            result = a * b.inv()
+            self.last_result = result
+            self.results.append(f">>> A × B⁻¹ =\n{result}\n")
+        except Exception as e:
+            self.results.append(f"Error: {e}\n")
+    
+    def _calc_augment(self):
+        try:
+            a = self._get_sympy_matrix("a")
+            b = self._get_sympy_matrix("b")
+            result = a.row_join(b)
+            self.last_result = result
+            self.results.append(f">>> [A | B] =\n{result}\n")
+        except Exception as e:
+            self.results.append(f"Error: {e}\n")
+    
+    def _copy_result_to(self, key: str):
+        """Copies last result to matrix A or B."""
+        if self.last_result is None:
+            self.results.append("No result to copy.\n")
+            return
+        try:
+            rows, cols = self.last_result.shape
+            setattr(self, f"rows_{key}", rows)
+            setattr(self, f"cols_{key}", cols)
+            getattr(self, f"rows_input_{key}").setText(str(rows))
+            getattr(self, f"cols_input_{key}").setText(str(cols))
+            self._build_matrix_grid(key)
+            
+            cells = getattr(self, f"cells_{key}")
+            for r in range(rows):
+                for c in range(cols):
+                    cells[r][c].setText(str(float(self.last_result[r, c])))
+            
+            name = "A" if key == "a" else "B"
+            self.results.append(f"Result copied to Matrix {name}\n")
+        except Exception as e:
+            self.results.append(f"Error copying: {e}\n")
 
 
 class Sidebar(QWidget):
