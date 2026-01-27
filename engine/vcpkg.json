@@ -1,0 +1,12 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+    "name": "equacore",
+    "version": "1.0.0",
+    "description": "Binary EquaLab C++ Math Engine",
+    "dependencies": [
+        "cln",
+        "ginac",
+        "eigen3",
+        "pybind11"
+    ]
+}
