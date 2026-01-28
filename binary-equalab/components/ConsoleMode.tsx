@@ -153,6 +153,22 @@ const ConsoleMode: React.FC = () => {
         return `diff(${expr}, ${variable})`;
       });
 
+      // Fix factorial(n) → (n)! for Nerdamer
+      // Handles nested parentheses: factorial(2+3) → (2+3)!
+      processedExpr = processedExpr.replace(/\bfactorial\s*\(([^()]+|\([^()]*\))+\)/gi, (match) => {
+        // Extract content inside factorial(...)
+        const start = match.indexOf('(') + 1;
+        let depth = 1;
+        let i = start;
+        while (i < match.length && depth > 0) {
+          if (match[i] === '(') depth++;
+          if (match[i] === ')') depth--;
+          i++;
+        }
+        const inner = match.slice(start, i - 1);
+        return `(${inner})!`;
+      });
+
       const resultObj = nerdamer(processedExpr);
       const symbolicLatex = resultObj.toTeX();
       return symbolicLatex;
