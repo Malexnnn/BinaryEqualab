@@ -8,6 +8,7 @@ import { Eraser, Cloud, CloudOff, AlertCircle, ToggleLeft, ToggleRight } from 'l
 import apiService from '../services/apiService';
 import { parseExpression, ParseResult } from '../services/mathParser';
 import { getAutocompleteSuggestions, FunctionDef } from '../services/functionDefs';
+import { FINANCE_FUNCTIONS, FINANCE_FUNCTION_DEFS, FinanceResult } from '../services/financeFunctions';
 
 const ConsoleMode: React.FC = () => {
   const [input, setInput] = useState('');
@@ -81,8 +82,43 @@ const ConsoleMode: React.FC = () => {
     if (parseError) setParseError(null);
   }, [input]);
 
+  // Check if expression is a finance function call
+  const evaluateFinanceFunction = (expr: string): FinanceResult | null => {
+    const trimmed = expr.trim().toLowerCase();
+
+    // Match function pattern: funcName(args)
+    const match = trimmed.match(/^(\w+)\s*\(([^)]*)\)$/);
+    if (!match) return null;
+
+    const [, funcName, argsStr] = match;
+
+    if (!(funcName in FINANCE_FUNCTIONS)) return null;
+
+    // Parse arguments (can be negative numbers, decimals)
+    const args = argsStr
+      .split(',')
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+      .map(s => parseFloat(s));
+
+    if (args.some(isNaN)) return null;
+
+    try {
+      const func = FINANCE_FUNCTIONS[funcName];
+      return func(...args);
+    } catch (e) {
+      return null;
+    }
+  };
+
   // Fallback: Client-side Nerdamer evaluation
   const evaluateWithNerdamer = (expr: string): string => {
+    // First, check if it's a finance function
+    const financeResult = evaluateFinanceFunction(expr);
+    if (financeResult) {
+      return financeResult.latex;
+    }
+
     try {
       // Preprocess expression with our parser
       const parsed = parseExpression(expr);
