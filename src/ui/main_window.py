@@ -17,6 +17,7 @@ from PyQt6.QtGui import QFont, QAction, QIcon
 
 from src.core.engine import EquaEngine
 from src.utils.constants import AppConfig, AuroraPalette
+from src.ui.keypad import ScientificKeypad
 
 
 class ConsoleWidget(QWidget):
@@ -33,7 +34,16 @@ class ConsoleWidget(QWidget):
         self._setup_ui()
     
     def _setup_ui(self):
-        layout = QVBoxLayout(self)
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+        
+        # Splitter for console + keypad
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+        
+        # Left side: Console
+        console_widget = QWidget()
+        layout = QVBoxLayout(console_widget)
         layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(12)
         
@@ -149,6 +159,19 @@ class ConsoleWidget(QWidget):
         quick_layout.addWidget(self.toggle_btn)
         
         layout.addWidget(quick_frame)
+        
+        splitter.addWidget(console_widget)
+        
+        # Right side: Scientific Keypad
+        self.keypad = ScientificKeypad()
+        self.keypad.setMinimumWidth(280)
+        self.keypad.setMaximumWidth(400)
+        self.keypad.key_clicked.connect(self._on_key_clicked)
+        splitter.addWidget(self.keypad)
+        
+        # Set splitter sizes (console larger)
+        splitter.setSizes([700, 300])
+        main_layout.addWidget(splitter)
     
     def _insert_command(self, cmd):
         """Inserta un comando en el input."""
@@ -158,6 +181,23 @@ class ConsoleWidget(QWidget):
         else:
             new_text = cmd
         self.input.setText(new_text)
+        self.input.setFocus()
+    
+    def _on_key_clicked(self, value: str):
+        """Handle keypad button clicks."""
+        if value == "DEL":
+            # Delete last character
+            current = self.input.text()
+            self.input.setText(current[:-1])
+        elif value == "=":
+            # Execute expression
+            self._on_submit()
+        elif value == "AC":
+            # Clear input
+            self.input.clear()
+        else:
+            # Insert value at cursor
+            self.input.insert(value)
         self.input.setFocus()
     
     def _toggle_display_mode(self):
