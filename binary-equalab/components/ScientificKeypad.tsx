@@ -5,7 +5,7 @@ interface ScientificKeypadProps {
   onKeyClick: (val: string) => void;
 }
 
-type TabType = 'MAIN' | 'ABC' | 'FUNC' | 'CONST';
+type TabType = 'MAIN' | 'ABC' | 'FUNC' | 'CONST' | 'GREEK';
 
 const ScientificKeypad: React.FC<ScientificKeypadProps> = ({ onKeyClick }) => {
   const [activeTab, setActiveTab] = useState<TabType>('MAIN');
@@ -114,8 +114,8 @@ const ScientificKeypad: React.FC<ScientificKeypadProps> = ({ onKeyClick }) => {
         ]}
       />
       <Key label="eˣ" val="exp(" />
-      <Key label="ln" />
-      <Key label="log" />
+      <Key label="EXP" val="*10^" secondary />
+      <Key label="%" val="/100" />
 
       {/* Row 4: Numpad start */}
       <Key label="7" />
@@ -209,11 +209,47 @@ const ScientificKeypad: React.FC<ScientificKeypadProps> = ({ onKeyClick }) => {
     </div>
   );
 
+  const renderGreekTab = () => (
+    <div className="grid grid-cols-4 gap-3 h-full content-start">
+      {/* Greek lowercase */}
+      <Key label="α" val="alpha" />
+      <Key label="β" val="beta" />
+      <Key label="γ" val="gamma" />
+      <Key label="δ" val="delta" />
+
+      <Key label="ε" val="epsilon" />
+      <Key label="ζ" val="zeta" />
+      <Key label="η" val="eta" />
+      <Key label="θ" val="theta" />
+
+      <Key label="λ" val="lambda" />
+      <Key label="μ" val="mu" />
+      <Key label="ν" val="nu" />
+      <Key label="ξ" val="xi" />
+
+      <Key label="ρ" val="rho" />
+      <Key label="σ" val="sigma" />
+      <Key label="τ" val="tau" />
+      <Key label="φ" val="phi" />
+
+      <Key label="ψ" val="psi" />
+      <Key label="ω" val="omega" />
+      <Key label="∞" val="inf" />
+      <Key label="∂" val="d" />
+
+      {/* Greek uppercase */}
+      <Key label="Δ" val="Delta" secondary />
+      <Key label="Σ" val="sum" secondary />
+      <Key label="Π" val="product" secondary />
+      <Key label="Ω" val="Omega" secondary />
+    </div>
+  );
+
   return (
     <div className="flex flex-col h-full bg-background-light border-l border-aurora-border">
       {/* Tabs */}
       <div className="flex p-2 gap-2 border-b border-aurora-border bg-background">
-        {(['MAIN', 'ABC', 'FUNC', 'CONST'] as TabType[]).map((tab) => (
+        {(['MAIN', 'ABC', 'GREEK', 'FUNC', 'CONST'] as TabType[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -222,7 +258,7 @@ const ScientificKeypad: React.FC<ScientificKeypadProps> = ({ onKeyClick }) => {
               : 'text-aurora-secondary hover:bg-white/5'
               }`}
           >
-            {tab}
+            {tab === 'GREEK' ? 'αβγ' : tab}
           </button>
         ))}
       </div>
@@ -231,6 +267,7 @@ const ScientificKeypad: React.FC<ScientificKeypadProps> = ({ onKeyClick }) => {
       <div className="flex-1 p-4 overflow-y-auto custom-scrollbar">
         {activeTab === 'MAIN' && renderMainTab()}
         {activeTab === 'ABC' && renderAbcTab()}
+        {activeTab === 'GREEK' && renderGreekTab()}
         {activeTab === 'FUNC' && renderFuncTab()}
         {activeTab === 'CONST' && renderConstTab()}
       </div>
