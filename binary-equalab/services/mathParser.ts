@@ -71,14 +71,16 @@ export class MathParser {
             // Step 2: Replace Unicode symbols
             expr = this.replaceUnicodeSymbols(expr);
 
-            // Step 3: Fix common coefficient patterns (2x → 2*x, i3 → 3*i)
+            // Step 3: Fix function calls FIRST (sinx → sin(x), factorial → factorial)
+            // This must happen BEFORE implicit multiplication to protect function names
+            expr = this.fixFunctionCalls(expr);
+
+            // Step 4: Fix common coefficient patterns (2x → 2*x)
+            // Now that functions are marked with (), we can safely add *
             expr = this.fixImplicitMultiplication(expr);
 
-            // Step 4: Fix imaginary number patterns
+            // Step 5: Fix imaginary number patterns
             expr = this.fixImaginaryNumbers(expr);
-
-            // Step 5: Fix function calls (sinx → sin(x))
-            expr = this.fixFunctionCalls(expr);
 
             // Step 6: Balance parentheses
             const balanced = this.balanceParentheses(expr);

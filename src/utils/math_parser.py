@@ -92,14 +92,16 @@ class MathParser:
             # Step 2: Replace Unicode symbols
             expr = cls._replace_unicode_symbols(expr)
             
-            # Step 3: Fix coefficient patterns (2x → 2*x, i3 → 3*i)
+            # Step 3: Fix function calls FIRST (sinx → sin(x))
+            # This must happen BEFORE implicit multiplication to protect function names
+            expr = cls._fix_function_calls(expr)
+            
+            # Step 4: Fix coefficient patterns (2x → 2*x)
+            # Now that functions are marked with (), we can safely add *
             expr = cls._fix_implicit_multiplication(expr)
             
-            # Step 4: Fix imaginary number patterns
+            # Step 5: Fix imaginary number patterns
             expr = cls._fix_imaginary_numbers(expr)
-            
-            # Step 5: Fix function calls (sinx → sin(x))
-            expr = cls._fix_function_calls(expr)
             
             # Step 6: Balance parentheses
             result = cls._balance_parentheses(expr)
