@@ -5,6 +5,8 @@
  * Handles common user input patterns and provides helpful error messages.
  */
 
+import { translateToEnglish, FUNCTION_DEFINITIONS } from './functionDefs';
+
 export interface ParseResult {
     success: boolean;
     expression: string;      // Preprocessed expression ready for evaluation
@@ -17,15 +19,21 @@ export interface ParseResult {
  * Smart Math Parser with preprocessing and error detection
  */
 export class MathParser {
-    // Common function names
+    // Common function names (English + Spanish)
     private static readonly FUNCTIONS = [
+        // English
         'sin', 'cos', 'tan', 'cot', 'sec', 'csc',
         'asin', 'acos', 'atan', 'acot', 'asec', 'acsc',
         'sinh', 'cosh', 'tanh', 'coth',
         'arcsin', 'arccos', 'arctan',
         'sqrt', 'cbrt', 'abs', 'floor', 'ceil', 'round',
         'log', 'ln', 'exp', 'log10', 'log2',
-        'factorial', 'gamma', 'sign', 'mod'
+        'factorial', 'gamma', 'sign', 'mod',
+        'diff', 'integrate', 'solve', 'simplify', 'expand', 'factor', 'limit', 'taylor',
+        // Spanish (Binary EquaLab native)
+        'sen', 'derivar', 'integrar', 'resolver', 'simplificar', 'expandir', 'factorizar',
+        'limite', 'arcsen', 'arccos', 'arctan', 'raiz', 'piso', 'techo',
+        'sumatoria', 'productoria', 'sustituir'
     ];
 
     // Greek letters and constants
@@ -85,7 +93,10 @@ export class MathParser {
             }
             expr = balanced.expression;
 
-            // Step 7: Validate operators
+            // Step 7: Translate Spanish functions to English
+            expr = translateToEnglish(expr);
+
+            // Step 8: Validate operators
             const validated = this.validateOperators(expr);
             if (!validated.success) {
                 return {

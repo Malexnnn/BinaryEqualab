@@ -7,6 +7,7 @@ import ScientificKeypad from './ScientificKeypad';
 import { Eraser, Cloud, CloudOff, AlertCircle, ToggleLeft, ToggleRight } from 'lucide-react';
 import apiService from '../services/apiService';
 import { parseExpression, ParseResult } from '../services/mathParser';
+import { getAutocompleteSuggestions, FunctionDef } from '../services/functionDefs';
 
 const ConsoleMode: React.FC = () => {
   const [input, setInput] = useState('');
@@ -23,6 +24,11 @@ const ConsoleMode: React.FC = () => {
 
   // Display mode: exact (symbolic) or approx (numeric)
   const [displayMode, setDisplayMode] = useState<'exact' | 'approx'>('exact');
+
+  // Autocomplete suggestions
+  const [suggestions, setSuggestions] = useState<FunctionDef[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(0);
 
   // Substitute variables in expression
   const substituteVariables = (expr: string): string => {
@@ -408,24 +414,91 @@ const ConsoleMode: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Big Input Field */}
+        {/* Big Input Field with Autocomplete */}
         <div className="bg-background-dark p-6 border-t border-aurora-border shrink-0">
           <div className="relative">
             <div className={`absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold font-serif italic ${parseError ? 'text-red-500' : 'text-primary'}`}>ƒ</div>
             <input
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleKeyClick('=');
+              onChange={(e) => {
+                const val = e.target.value;
+                setInput(val);
+                // Trigger autocomplete on last word
+                const words = val.split(/[\s()+\-*/=,]+/);
+                const lastWord = words[words.length - 1];
+                if (lastWord && lastWord.length >= 2) {
+                  const matches = getAutocompleteSuggestions(lastWord, 'es', 5);
+                  setSuggestions(matches);
+                  setShowSuggestions(matches.length > 0);
+                  setSelectedSuggestion(0);
+                } else {
+                  setShowSuggestions(false);
+                }
               }}
+              onKeyDown={(e) => {
+                if (showSuggestions && suggestions.length > 0) {
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setSelectedSuggestion(prev => (prev + 1) % suggestions.length);
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setSelectedSuggestion(prev => (prev - 1 + suggestions.length) % suggestions.length);
+                  } else if (e.key === 'Tab' || e.key === 'Enter') {
+                    if (showSuggestions && suggestions[selectedSuggestion]) {
+                      e.preventDefault();
+                      // Replace last partial word with selected function
+                      const words = input.split(/[\s()+\-*/=,]+/);
+                      const lastWord = words[words.length - 1];
+                      const fnName = suggestions[selectedSuggestion].name;
+                      const newInput = input.slice(0, input.length - lastWord.length) + fnName + '(';
+                      setInput(newInput);
+                      setShowSuggestions(false);
+                      return;
+                    }
+                  } else if (e.key === 'Escape') {
+                    setShowSuggestions(false);
+                  }
+                }
+                if (e.key === 'Enter' && !showSuggestions) {
+                  handleKeyClick('=');
+                }
+              }}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
               className={`w-full bg-background-light border rounded-2xl py-4 pl-12 pr-4 text-xl lg:text-2xl font-mono text-white placeholder:text-aurora-muted focus:ring-2 focus:border-transparent transition-all shadow-inner ${parseError
                 ? 'border-red-500 focus:ring-red-500/50'
                 : 'border-aurora-border focus:ring-primary'
                 }`}
-              placeholder="Enter expression..."
+              placeholder="Escribe una expresión... (ej: derivar(x^2, x))"
               autoFocus
             />
-            {input && !parseError && (
+
+            {/* Autocomplete Dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute left-0 right-0 bottom-full mb-2 bg-background-light border border-aurora-border rounded-xl shadow-xl overflow-hidden z-50">
+                {suggestions.map((fn, idx) => (
+                  <div
+                    key={fn.name}
+                    className={`px-4 py-3 cursor-pointer flex justify-between items-center ${idx === selectedSuggestion ? 'bg-primary/20 text-primary' : 'hover:bg-white/5'
+                      }`}
+                    onMouseDown={() => {
+                      const words = input.split(/[\s()+\-*/=,]+/);
+                      const lastWord = words[words.length - 1];
+                      const newInput = input.slice(0, input.length - lastWord.length) + fn.name + '(';
+                      setInput(newInput);
+                      setShowSuggestions(false);
+                    }}
+                  >
+                    <div>
+                      <span className="font-bold font-mono">{fn.name}</span>
+                      <span className="text-aurora-muted ml-2 text-sm">{fn.syntax}</span>
+                    </div>
+                    <span className="text-xs text-aurora-secondary">{fn.description.es}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {input && !parseError && !showSuggestions && (
               <div className="absolute right-4 top-1/2 -translate-y-1/2">
                 <MathDisplay expression={input} className="text-aurora-secondary/50 text-sm" />
               </div>
