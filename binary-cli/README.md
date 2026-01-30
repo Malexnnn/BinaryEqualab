@@ -1,7 +1,7 @@
-# Binary EquaLab CLI
+# Binary EquaLab CLI - Aurora v2.0
 
 <p align="center">
-  <img src="../docs/banner_cli.png" alt="Binary EquaLab CLI" width="500">
+  <img src="https://raw.githubusercontent.com/Malexnnn/BinaryEqualab/main/docs/banner_cli.png" alt="Binary EquaLab CLI" width="500">
 </p>
 
 <p align="center">
@@ -10,132 +10,102 @@
 
 ---
 
-## 🚀 Installation
-
+## 🚀 Instalación
 ```bash
 pip install binary-equalab
 ```
 
-Or from source:
+### 👩‍💻 Modo Desarrollador (Local)
+Si quieres editar el código y probar tus cambios al instante:
 ```bash
-cd binary-cli
-pip install -e .\n```\n\n### 📱 Termux (Android)\n\nLa instalación en Termux nativo requiere compilar algunas dependencias (NumPy/SymPy).\n\n```bash\n# 1. Instalar compiladores y librerías del sistema\npkg update\npkg install python clang make pkg-config libjpeg-turbo freetype libpng\n\n# 2. Instalar Binary EquaLab\npip install binary-equalab\n```
+git clone https://github.com/Malexnnn/BinaryEqualab.git
+cd BinaryEqualab/binary-cli
+pip install -e .
 ```
 
 ---
 
-## 🐚 Universal Shell Setup
-Binary EquaLab incluye un configurador mágico para tu terminal. Instala temas, fuentes y plugins automáticamente.
+## 🐚 Uso y Aliases
+Puedes invocar la herramienta con cualquiera de estos comandos:
+- `binary-equalab` (Estándar)
+- `bneqls` (Corto)
+- `beq` (Ultra corto)
+- `binary-math` (Legacy)
 
+### REPL Mode (Interactivo)
+Entra al modo interactivo con historial y autocompletado:
 ```bash
-# Ejecutar configurador
-binary setup-shell
-# O directamente:
-python -m binary_equalab.cli setup-shell
+bneqls
 ```
 
-Soporta:
--   **Windows**: Oh My Posh + Nerd Fonts.
--   **Termux**: Zsh + Oh My Zsh + Autosuggestions.
--   **Linux**: Recomendaciones de Starship.
+```text
+╔══════════════════════════════════════════════════════════╗
+║    Binary EquaLab CLI   Aurora v2.0                      ║
+║    "Las matemáticas también sienten,                     ║
+║     pero estas no se equivocan."                         ║
+╚══════════════════════════════════════════════════════════╝
 
-## 🚀 Uso del CLI
-
-### REPL Mode
-```bash
-binary-math
-```
-
-```
-Binary EquaLab CLI v1.0.0
 >>> derivar(x^2 + 3x, x)
 → 2*x + 3
-
->>> integrar(sin(x), x)
-→ -cos(x)
-
->>> factorial(5)
-→ 120
-
->>> van(0.10, -1000, 300, 400, 500)
-→ 78.82
 ```
 
 ### One-liner Mode
 ```bash
-binary-math "derivar(x^3, x)"
+bneqls "derivar(x^3, x)"
 # Output: 3*x^2
-
-binary-math "factorial(10)"
-# Output: 3628800
-
-binary-math "0b1010 + 0b0101"
-# Output: 15
 ```
 
 ---
 
-## 🔢 Functions
+## ✨ Novedades v2.0 (Aurora)
 
-### Calculus
-| Function                | Example                    | Result    |
-| ----------------------- | -------------------------- | --------- |
-| `derivar(f, x)`         | `derivar(x^2, x)`          | `2*x`     |
-| `integrar(f, x)`        | `integrar(sin(x), x)`      | `-cos(x)` |
-| `limite(f, x, a)`       | `limite(sin(x)/x, x, 0)`   | `1`       |
-| `sumatoria(f, n, a, b)` | `sumatoria(n^2, n, 1, 10)` | `385`     |
-
-### Algebra
-| Function         | Example                      | Result        |
-| ---------------- | ---------------------------- | ------------- |
-| `simplificar(f)` | `simplificar((x^2-1)/(x-1))` | `x+1`         |
-| `expandir(f)`    | `expandir((x+1)^2)`          | `x^2+2*x+1`   |
-| `factorizar(f)`  | `factorizar(x^2-1)`          | `(x-1)*(x+1)` |
-| `resolver(f, x)` | `resolver(x^2-4, x)`         | `[-2, 2]`     |
-
-### Statistics
-| Function          | Example                        |
-| ----------------- | ------------------------------ |
-| `media(...)`      | `media(1, 2, 3, 4, 5)` → `3`   |
-| `mediana(...)`    | `mediana(1, 2, 3, 4, 5)` → `3` |
-| `desviacion(...)` | Standard deviation             |
-| `varianza(...)`   | Variance                       |
-
-### Finance
-| Function                        | Example                                |
-| ------------------------------- | -------------------------------------- |
-| `van(r, cf0, cf1, ...)`         | `van(0.10, -1000, 300, 400)`           |
-| `tir(cf0, cf1, ...)`            | `tir(-1000, 300, 400, 500)`            |
-| `depreciar(cost, res, years)`   | `depreciar(10000, 1000, 5)`            |
-| `interes_simple(c, r, t)`       | `interes_simple(1000, 0.05, 3)`        |
-| `interes_compuesto(c, r, n, t)` | `interes_compuesto(1000, 0.05, 12, 3)` |
-
-### Number Systems
+### 🎵 Sonificación (Audio)
+Convierte funciones matemáticas en archivos de audio `.wav`.
+```python
+>>> sonify(sin(440*2*pi*t))  # Genera una onda pura a 440Hz
+>>> sonify(x * sin(x))       # Genera algo más experimental
 ```
-0b1010    → 10   (binary)
-0xFF      → 255  (hexadecimal)
-0o17      → 15   (octal)
+
+### 📐 Geometría Analítica
+```python
+>>> distancia((0,0), (3,4))
+→ 5
+>>> recta((0,0), (1,1))
+→ y = x
+>>> pendiente((0,0), (1,1))
+→ 1
 ```
+
+### 🥚 Easter Eggs
+El sistema tiene "alma". Intenta escribir estos comandos en el REPL:
+- `binary`
+- `aldra`
+- `lupe`
 
 ---
 
-## 🥚 Easter Eggs
+## 🔢 Funciones Clave
 
-Try these:
-- `1+1`
-- `(-1)*(-1)`
-- `0b101010`
+### Cálculo
+| Función     | Ejemplo                    | Resultado |
+| :---------- | :------------------------- | :-------- |
+| `derivar`   | `derivar(x^2, x)`          | `2*x`     |
+| `integrar`  | `integrar(sin(x), x)`      | `-cos(x)` |
+| `limite`    | `limite(sin(x)/x, x, 0)`   | `1`       |
+| `sumatoria` | `sumatoria(n^2, n, 1, 10)` | `385`     |
+
+### Finanzas
+`van`, `tir`, `depreciar`, `interes_compuesto`.
+
+### Estadística
+`media`, `mediana`, `desviacion`, `varianza`.
 
 ---
 
-## 🛠️ Development
-
-```bash
-cd binary-cli
-pip install -e ".[dev]"
-pytest
-```
+## 📱 Mobile App (Binary Pocket)
+Esta versión incluye el código base para la app móvil en `binary-mobile/` (construida con Flet).
+¡Próximamente en tiendas!
 
 ---
 
-MIT © Malexnnn/ Aldra ORG.
+*Hecho con ❤️ por Malexnnn.*
