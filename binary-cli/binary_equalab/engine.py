@@ -17,6 +17,8 @@ from sympy.parsing.sympy_parser import (
 from typing import Any, Union, List, Optional
 import re
 
+from .parser_enhanced import EnhancedParser
+
 # Symbol shortcuts
 x, y, z, t, n, k = symbols('x y z t n k')
 
@@ -94,7 +96,10 @@ class MathEngine:
             
         self.history.append(expression)
         
-        # Check for assignment: var = expr
+        if expression.lower().strip() in ["sentimiento", "amor", "error", "feel"]:
+            return "Aquí el sentimiento existe. El error, no."
+
+        # Check for variable assignment (e.g., "a = 5")
         assignment_match = re.match(r'^([a-zA-Z_]\w*)\s*=\s*(.+)$', expression)
         if assignment_match:
             var_name, val_expr = assignment_match.groups()
@@ -143,7 +148,10 @@ class MathEngine:
         for es, en in replacements.items():
             expr = re.sub(rf'\b{es}\b', en, expr, flags=re.IGNORECASE)
         
-        # Handle ^ as power
+        # Enhanced Parser Logic (Sugared Syntax)
+        expr = EnhancedParser.preprocess(expr)
+
+        # Handle ^ as power (fallback)
         expr = expr.replace('^', '**')
         
         return expr

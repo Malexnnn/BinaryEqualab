@@ -45,6 +45,7 @@ dev = [
 [project.scripts]
 binary-math = "binary_equalab.cli:main"
 beq = "binary_equalab.cli:main"
+bneqls = "binary_equalab.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/Malexnnn/BinaryEquaLab"

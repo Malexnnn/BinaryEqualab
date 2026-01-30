@@ -255,14 +255,14 @@ const VectorsMode: React.FC = () => {
                     type="number"
                     value={vector.x}
                     onChange={(e) => onChange({ ...vector, x: parseFloat(e.target.value) || 0 })}
-                    className="w-16 bg-aurora-panel border border-white/10 rounded px-2 py-1 text-white font-mono"
+                    className="w-16 bg-white/5 border border-white/10 rounded px-2 py-1 text-white font-mono"
                 />
                 <span className="text-aurora-muted text-xs">y:</span>
                 <input
                     type="number"
                     value={vector.y}
                     onChange={(e) => onChange({ ...vector, y: parseFloat(e.target.value) || 0 })}
-                    className="w-16 bg-aurora-panel border border-white/10 rounded px-2 py-1 text-white font-mono"
+                    className="w-16 bg-white/5 border border-white/10 rounded px-2 py-1 text-white font-mono"
                 />
                 {dimension === '3d' && 'z' in vector && (
                     <>
@@ -271,7 +271,7 @@ const VectorsMode: React.FC = () => {
                             type="number"
                             value={(vector as Vector3D).z}
                             onChange={(e) => onChange({ ...vector, z: parseFloat(e.target.value) || 0 })}
-                            className="w-16 bg-aurora-panel border border-white/10 rounded px-2 py-1 text-white font-mono"
+                            className="w-16 bg-white/5 border border-white/10 rounded px-2 py-1 text-white font-mono"
                         />
                     </>
                 )}
@@ -304,8 +304,8 @@ const VectorsMode: React.FC = () => {
                         key={dim}
                         onClick={() => setDimension(dim)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${dimension === dim
-                                ? 'bg-primary text-white shadow-lg'
-                                : 'bg-background hover:bg-background-light text-aurora-text border border-aurora-border'
+                            ? 'bg-primary text-white shadow-lg'
+                            : 'bg-background hover:bg-background-light text-aurora-text border border-aurora-border'
                             }`}
                     >
                         {dim.toUpperCase()}
@@ -340,8 +340,8 @@ const VectorsMode: React.FC = () => {
                                     key={op.id}
                                     onClick={() => setOperation(op.id)}
                                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${operation === op.id
-                                            ? 'bg-aurora-primary text-white'
-                                            : 'bg-aurora-panel text-aurora-muted border border-white/10'
+                                        ? 'bg-aurora-primary text-white'
+                                        : 'bg-white/5 text-aurora-muted border border-white/10'
                                         }`}
                                 >
                                     {op.label}
@@ -358,7 +358,7 @@ const VectorsMode: React.FC = () => {
                                 type="number"
                                 value={scalar}
                                 onChange={(e) => setScalar(parseFloat(e.target.value) || 0)}
-                                className="w-24 bg-aurora-panel border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
+                                className="w-24 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
                             />
                         </div>
                     )}
@@ -392,7 +392,7 @@ const VectorsMode: React.FC = () => {
 
                     {/* Properties */}
                     {properties.length > 0 && (
-                        <div className="bg-aurora-panel border border-white/10 rounded-xl p-4">
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                             <h4 className="text-sm font-bold text-aurora-muted uppercase mb-2">Propiedades</h4>
                             <ul className="space-y-1 text-sm font-mono text-aurora-text">
                                 {properties.map((prop, i) => (
@@ -404,7 +404,7 @@ const VectorsMode: React.FC = () => {
 
                     {/* Visualization */}
                     {dimension === '2d' && (
-                        <div className="flex-1 bg-aurora-panel border border-white/10 rounded-xl overflow-hidden">
+                        <div className="flex-1 bg-white/5 border border-white/10 rounded-xl overflow-hidden">
                             <div className="p-2 border-b border-white/10 flex items-center gap-2">
                                 <Eye size={14} className="text-aurora-muted" />
                                 <span className="text-xs text-aurora-muted uppercase font-bold">Visualización</span>

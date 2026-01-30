@@ -43,6 +43,12 @@ if __name__ == "__main__":
             
             layout.addStretch()
             layout.addWidget(label)
+            
+            slogan = QLabel("Las matemáticas también sienten,\npero estas no se equivocan.")
+            slogan.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            slogan.setStyleSheet("font-size: 14px; font-style: italic; color: #78716C; margin-bottom: 20px;")
+            layout.addWidget(slogan)
+            
             layout.addWidget(sublabel)
             layout.addStretch()
             
@@ -71,6 +77,26 @@ if __name__ == "__main__":
             self.financeInterface = FinancialWidget()
             self.financeInterface.setObjectName("financeInterface")
             self.addSubInterface(self.financeInterface, FIF.MARKET, "Finanzas")
+            
+            from ui.matrix import MatrixWidget
+            self.matrixInterface = MatrixWidget()
+            self.matrixInterface.setObjectName("matrixInterface")
+            self.addSubInterface(self.matrixInterface, FIF.TILES, "Matrices")
+            
+            from ui.vectors import VectorsWidget
+            self.vectorsInterface = VectorsWidget()
+            self.vectorsInterface.setObjectName("vectorsInterface")
+            self.addSubInterface(self.vectorsInterface, FIF.IOT, "Vectores")
+            
+            from ui.equations import EquationsWidget
+            self.equationsInterface = EquationsWidget()
+            self.equationsInterface.setObjectName("equationsInterface")
+            self.addSubInterface(self.equationsInterface, FIF.EDIT, "Ecuaciones")
+            
+            from ui.statistics import StatisticsWidget
+            self.analyticsInterface = StatisticsWidget()
+            self.analyticsInterface.setObjectName("analyticsInterface")
+            self.addSubInterface(self.analyticsInterface, FIF.ALBUM, "Estadística")
 
             # Feedback (Bottom)
             self.navigationInterface.addItem(

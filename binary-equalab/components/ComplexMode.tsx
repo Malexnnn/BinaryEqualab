@@ -211,8 +211,8 @@ const ComplexMode: React.FC = () => {
                 <button
                     onClick={() => setInputMode('rectangular')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${inputMode === 'rectangular'
-                            ? 'bg-primary text-white shadow-lg'
-                            : 'bg-background hover:bg-background-light text-aurora-text border border-aurora-border'
+                        ? 'bg-primary text-white shadow-lg'
+                        : 'bg-background hover:bg-background-light text-aurora-text border border-aurora-border'
                         }`}
                 >
                     Rectangular (a + bi)
@@ -220,8 +220,8 @@ const ComplexMode: React.FC = () => {
                 <button
                     onClick={() => setInputMode('polar')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${inputMode === 'polar'
-                            ? 'bg-primary text-white shadow-lg'
-                            : 'bg-background hover:bg-background-light text-aurora-text border border-aurora-border'
+                        ? 'bg-primary text-white shadow-lg'
+                        : 'bg-background hover:bg-background-light text-aurora-text border border-aurora-border'
                         }`}
                 >
                     Polar (r∠θ)
@@ -244,7 +244,7 @@ const ComplexMode: React.FC = () => {
                                     type="number"
                                     value={z1Re}
                                     onChange={(e) => setZ1Re(e.target.value)}
-                                    className="w-24 bg-aurora-panel border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
+                                    className="w-24 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
                                     placeholder="Re"
                                 />
                                 <span className="text-aurora-muted">+</span>
@@ -252,7 +252,7 @@ const ComplexMode: React.FC = () => {
                                     type="number"
                                     value={z1Im}
                                     onChange={(e) => setZ1Im(e.target.value)}
-                                    className="w-24 bg-aurora-panel border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
+                                    className="w-24 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
                                     placeholder="Im"
                                 />
                                 <span className="text-aurora-primary font-bold">i</span>
@@ -263,7 +263,7 @@ const ComplexMode: React.FC = () => {
                                     type="number"
                                     value={z1R}
                                     onChange={(e) => setZ1R(e.target.value)}
-                                    className="w-24 bg-aurora-panel border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
+                                    className="w-24 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
                                     placeholder="r"
                                 />
                                 <span className="text-aurora-primary font-bold">∠</span>
@@ -271,7 +271,7 @@ const ComplexMode: React.FC = () => {
                                     type="number"
                                     value={z1Theta}
                                     onChange={(e) => setZ1Theta(e.target.value)}
-                                    className="w-24 bg-aurora-panel border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
+                                    className="w-24 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
                                     placeholder="θ"
                                 />
                                 <span className="text-aurora-muted">°</span>
@@ -286,8 +286,8 @@ const ComplexMode: React.FC = () => {
                                 key={op}
                                 onClick={() => setOperation(op)}
                                 className={`w-12 h-12 rounded-lg text-xl font-bold transition-all ${operation === op
-                                        ? 'bg-aurora-primary text-white'
-                                        : 'bg-aurora-panel text-aurora-muted border border-white/10'
+                                    ? 'bg-aurora-primary text-white'
+                                    : 'bg-white/5 text-aurora-muted border border-white/10'
                                     }`}
                             >
                                 {op === '*' ? '×' : op === '/' ? '÷' : op}
@@ -305,7 +305,7 @@ const ComplexMode: React.FC = () => {
                                 type="number"
                                 value={z2Re}
                                 onChange={(e) => setZ2Re(e.target.value)}
-                                className="w-24 bg-aurora-panel border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
+                                className="w-24 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
                                 placeholder="Re"
                             />
                             <span className="text-aurora-muted">+</span>
@@ -313,7 +313,7 @@ const ComplexMode: React.FC = () => {
                                 type="number"
                                 value={z2Im}
                                 onChange={(e) => setZ2Im(e.target.value)}
-                                className="w-24 bg-aurora-panel border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
+                                className="w-24 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
                                 placeholder="Im"
                             />
                             <span className="text-aurora-primary font-bold">i</span>
@@ -349,7 +349,7 @@ const ComplexMode: React.FC = () => {
                             {/* Conversions */}
                             <div className="grid grid-cols-2 gap-3">
                                 {z1Polar && (
-                                    <div className="bg-aurora-panel border border-white/10 rounded-lg p-3">
+                                    <div className="bg-white/5 border border-white/10 rounded-lg p-3">
                                         <div className="text-xs text-aurora-muted uppercase">z₁ polar</div>
                                         <div className="text-sm font-mono text-green-400">
                                             {z1Polar.r.toFixed(2)} ∠ {z1Polar.thetaDeg.toFixed(2)}°
@@ -357,7 +357,7 @@ const ComplexMode: React.FC = () => {
                                     </div>
                                 )}
                                 {z2Polar && (
-                                    <div className="bg-aurora-panel border border-white/10 rounded-lg p-3">
+                                    <div className="bg-white/5 border border-white/10 rounded-lg p-3">
                                         <div className="text-xs text-aurora-muted uppercase">z₂ polar</div>
                                         <div className="text-sm font-mono text-blue-400">
                                             {z2Polar.r.toFixed(2)} ∠ {z2Polar.thetaDeg.toFixed(2)}°
@@ -369,7 +369,7 @@ const ComplexMode: React.FC = () => {
                     )}
 
                     {/* Argand Diagram */}
-                    <div className="flex-1 bg-aurora-panel border border-white/10 rounded-xl overflow-hidden">
+                    <div className="flex-1 bg-white/5 border border-white/10 rounded-xl overflow-hidden">
                         <div className="p-2 border-b border-white/10 flex items-center gap-2">
                             <Eye size={14} className="text-aurora-muted" />
                             <span className="text-xs text-aurora-muted uppercase font-bold">Diagrama de Argand</span>

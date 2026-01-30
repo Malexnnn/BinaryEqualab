@@ -114,7 +114,7 @@ const MatrixMode: React.FC = () => {
         matrixKey: 'A' | 'B'
     }) => (
         <div className="bg-background-light rounded-xl border border-aurora-border overflow-hidden flex flex-col">
-            <div className="px-4 py-3 border-b border-aurora-border bg-background-dark flex justify-between items-center">
+            <div className="px-4 py-3 border-b border-aurora-border bg-white/5 flex justify-between items-center">
                 <div className="flex items-center gap-3">
                     <div className={`size-8 rounded ${matrixKey === 'A' ? 'bg-primary/20 text-primary' : 'bg-white/10 text-white'} flex items-center justify-center font-bold font-mono`}>
                         {label}
@@ -152,14 +152,14 @@ const MatrixMode: React.FC = () => {
                                     type="text"
                                     value={val}
                                     onChange={(e) => updateMatrixValue(matrixKey, r, c, e.target.value)}
-                                    className="w-14 h-12 bg-background-dark border border-aurora-border rounded text-center text-white font-mono focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                    className="w-14 h-12 bg-white/5 border border-aurora-border rounded text-center text-white font-mono focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                                 />
                             ))
                         )}
                     </div>
                 </div>
             </div>
-            <div className="px-4 py-2 border-t border-aurora-border bg-background-dark flex justify-end gap-2">
+            <div className="px-4 py-2 border-t border-aurora-border bg-white/5 flex justify-end gap-2">
                 <button
                     onClick={() => resizeMatrix(matrixKey, matrix.rows, Math.max(1, matrix.cols - 1))}
                     className="text-xs text-aurora-muted hover:text-white"
@@ -211,7 +211,7 @@ const MatrixMode: React.FC = () => {
                                 key={op}
                                 onClick={() => executeOperation(op)}
                                 disabled={loading}
-                                className="px-4 py-2 rounded-full bg-background-dark hover:bg-primary hover:text-white text-aurora-muted text-sm font-mono transition-colors border border-transparent hover:border-primary/50 disabled:opacity-50"
+                                className="px-4 py-2 rounded-full bg-white/5 hover:bg-primary hover:text-white text-aurora-muted text-sm font-mono transition-colors border border-transparent hover:border-primary/50 disabled:opacity-50"
                             >
                                 {op}
                             </button>
@@ -220,7 +220,7 @@ const MatrixMode: React.FC = () => {
                 </div>
 
                 {/* Results Console */}
-                <div className="bg-background-dark rounded-xl border border-aurora-border overflow-hidden">
+                <div className="bg-white/5 rounded-xl border border-aurora-border overflow-hidden">
                     <div className="px-4 py-2 border-b border-aurora-border bg-background-light flex justify-between">
                         <span className="text-xs font-bold text-aurora-muted uppercase tracking-wider">Console Output</span>
                         <button onClick={clearResults} className="text-xs text-primary cursor-pointer hover:underline">

@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <em>⌨️ Calculadora CAS en la terminal</em>
+  <em>"Las matemáticas también sienten, pero estas no se equivocan."</em>
 </p>
 
 ---
@@ -19,7 +19,7 @@ pip install binary-equalab
 Or from source:
 ```bash
 cd binary-cli
-pip install -e .
+pip install -e .\n```\n\n### 📱 Termux (Android)\n\nLa instalación en Termux nativo requiere compilar algunas dependencias (NumPy/SymPy).\n\n```bash\n# 1. Instalar compiladores y librerías del sistema\npkg update\npkg install python clang make pkg-config libjpeg-turbo freetype libpng\n\n# 2. Instalar Binary EquaLab\npip install binary-equalab\n```
 ```
 
 ---

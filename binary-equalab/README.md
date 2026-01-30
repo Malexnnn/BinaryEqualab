@@ -1,4 +1,9 @@
-# Binary EquaLab Web
+# Binary EquaLab Web 🌐
+
+> *"Las matemáticas también sienten, pero estas no se equivocan."*
+
+La versión web de Binary EquaLab, construida con React, Vite y TailwindCSS.
+Designed for the "Aurora" aesthetic.
 
 <p align="center">
   <img src="../docs/banner_web.png" alt="Binary EquaLab Web" width="500">

@@ -163,12 +163,12 @@ BinaryEquaLab/
 
 ## 🎯 Philosophy
 
-> "El álgebra también siente" — The algebra also feels.
+> *"Las matemáticas también sienten, pero estas no se equivocan."*
 
-Binary EquaLab embraces the duality of mathematics:
-- **1 and 0** — On and off, being and non-being
-- **+ and -** — Positive and negative in harmony
-- **Binary** — The fundamental language of computation
+Binary EquaLab es un ecosistema matemático unificado que abarca:
+- **CLI**: Para terminales rápidas (Windows/Linux/Termux).
+- **Desktop**: App visual potente (PyQt6/Fluenta).
+- **Web**: Experiencia accesible desde cualquier navegador.
 
 Every calculation carries meaning beyond numbers.
 

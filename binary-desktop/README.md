@@ -1,6 +1,7 @@
 # Binary Desktop
 
-Native PyQt6 application for Binary EquaLab, featuring the "Aurora" design system.
+Native PyQt6 application for Binary EquaLab.
+> *"Las matemáticas también sienten, pero estas no se equivocan."*
 
 ## Features
 - **Aurora Theme**: Deep dark background with Orange/Gold accents.

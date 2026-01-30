@@ -21,8 +21,9 @@ console = Console()
 
 BANNER = """
 [bold orange1]╔══════════════════════════════════════════════════════════╗
-║    [white]Binary EquaLab CLI[/white]   [dim]v1.0.0[/dim]                          ║
-║    [dim italic]"El álgebra también siente"[/dim italic]                           ║
+║    [white]Binary EquaLab CLI[/white]   [dim]v1.1.0[/dim]                          ║
+║    [dim italic]"Las matemáticas también sienten,[/dim italic]                  ║
+║    [dim italic] pero estas no se equivocan."[/dim italic]                  ║
 ╚══════════════════════════════════════════════════════════╝[/bold orange1]
 
 [dim]Comandos:[/dim]

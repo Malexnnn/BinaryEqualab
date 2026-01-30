@@ -187,8 +187,8 @@ const EquationsMode: React.FC = () => {
                             setSteps([]);
                         }}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${eqType === type
-                                ? 'bg-primary text-white shadow-lg'
-                                : 'bg-background hover:bg-background-light text-aurora-text border border-aurora-border'
+                            ? 'bg-primary text-white shadow-lg'
+                            : 'bg-background hover:bg-background-light text-aurora-text border border-aurora-border'
                             }`}
                     >
                         {type === 'single' && 'Ecuación'}
@@ -214,7 +214,7 @@ const EquationsMode: React.FC = () => {
                                 {eqType === 'system' && (
                                     <span className="text-aurora-muted text-xs w-8">({idx + 1})</span>
                                 )}
-                                <div className="flex-1 flex items-center gap-2 bg-aurora-panel border border-white/10 rounded-lg p-2">
+                                <div className="flex-1 flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg p-2">
                                     <input
                                         type="text"
                                         value={eq.lhs}
@@ -263,7 +263,7 @@ const EquationsMode: React.FC = () => {
                             type="text"
                             value={variable}
                             onChange={(e) => setVariable(e.target.value)}
-                            className="w-full bg-aurora-panel border border-white/10 rounded-lg px-4 py-2 text-white font-mono focus:outline-none focus:border-aurora-primary"
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white font-mono focus:outline-none focus:border-aurora-primary"
                         />
                     </div>
 
@@ -299,7 +299,7 @@ const EquationsMode: React.FC = () => {
 
                             {/* Steps */}
                             {steps.length > 0 && (
-                                <div className="flex-1 bg-aurora-panel border border-white/10 rounded-xl p-4 overflow-y-auto">
+                                <div className="flex-1 bg-white/5 border border-white/10 rounded-xl p-4 overflow-y-auto">
                                     <h4 className="text-sm font-bold text-aurora-muted uppercase mb-3">Pasos</h4>
                                     <ul className="space-y-2 text-sm font-mono">
                                         {steps.map((step, i) => (
