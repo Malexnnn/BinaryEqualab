@@ -81,6 +81,12 @@ HELP_TEXT = """
 | `depreciar(costo, residual, años)` | `depreciar(10000, 1000, 5)` |
 | `interes_simple(capital, tasa, tiempo)` | `interes_simple(1000, 0.05, 3)` |
 | `interes_compuesto(capital, tasa, n, tiempo)` | `interes_compuesto(1000, 0.05, 12, 3)` |
+
+### Aliases y Accesos Directos
+- **Shell**: Puedes ejecutar el programa como `binary-equalab`, `bneqls`, `beq` o `binary-math`.
+- **Trigonometría**: `seno`=`sin`, `coseno`=`cos`, `tangente`=`tan`.
+- **General**: `sonificar`=`sonify`, `derivada`=`derivar`.
+
 """
 
 
@@ -90,9 +96,24 @@ def get_prompt_style():
     })
 
 
+def print_banner():
+    """Print the CLI banner using Rich panels."""
+    title = Text("Binary EquaLab CLI", style="bold white")
+    version = Text("Aurora v2.0.0", style="dim")
+    slogan = Text('"Las matemáticas también sienten,\npero estas no se equivocan."', style="dim italic")
+
+    content = Text.assemble(title, "  ", version, "\n\n", slogan, justify="center")
+    panel = Panel(
+        content, 
+        border_style="bold orange1", 
+        expand=False,
+        subtitle="[dim]Escribe 'help' para ver comandos[/dim]"
+    )
+    console.print(panel)
+
 def repl():
     """Start the interactive REPL."""
-    console.print(BANNER)
+    print_banner()
     
     engine = MathEngine()
     
@@ -113,23 +134,36 @@ def repl():
                 continue
             
             # Handle special commands
-            if user_input.lower() in ('exit', 'quit', 'q'):
+            cmd = user_input.lower()
+            if cmd in ('exit', 'quit', 'q'):
                 console.print("[dim]¡Hasta luego![/dim]")
                 break
             
-            if user_input.lower() in ('cls', 'clear'):
+            if cmd in ('cls', 'clear'):
                 console.clear()
-                console.print(BANNER)
+                print_banner()
                 continue
             
-            if user_input.lower() == 'help':
+            if cmd == 'help':
                 console.print(Markdown(HELP_TEXT))
                 continue
             
-            if user_input.lower() == 'history':
+            if cmd == 'history':
                 for i, h in enumerate(engine.history[-10:], 1):
                     console.print(f"[dim]{i}.[/dim] {h}")
                 continue
+            
+            # --- Easter Eggs ---
+            if cmd == 'binary':
+                console.print(Panel("[bold cyan]Las matemáticas también sienten.[/bold cyan]", border_style="cyan"))
+                continue
+            if cmd == 'aldra':
+                console.print(Panel("[bold magenta]De Aldra para la gente, gratis y con alma.[/bold magenta]", border_style="magenta"))
+                continue
+            if cmd == 'lupe':
+                console.print(Panel("[bold white]In Memoriam.[/bold white]", border_style="white"))
+                continue
+            # -------------------
             
             # Evaluate expression
             try:
