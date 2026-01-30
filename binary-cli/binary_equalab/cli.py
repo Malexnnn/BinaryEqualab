@@ -99,7 +99,7 @@ def get_prompt_style():
 def print_banner():
     """Print the CLI banner using Rich panels."""
     title = Text("Binary EquaLab CLI", style="bold white")
-    version = Text("Aurora v2.0.1", style="dim")
+    version = Text("Aurora v2.0.2", style="dim")
     slogan = Text('"Las matemáticas también sienten,\npero estas no se equivocan."', style="dim italic")
 
     content = Text.assemble(title, "  ", version, "\n\n", slogan, justify="center")
