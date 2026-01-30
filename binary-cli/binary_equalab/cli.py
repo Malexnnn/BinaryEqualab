@@ -21,7 +21,7 @@ console = Console()
 
 BANNER = """
 [bold orange1]╔══════════════════════════════════════════════════════════╗
-║    [white]Binary EquaLab CLI[/white]   [dim]v1.1.0[/dim]                          ║
+║    [white]Binary EquaLab CLI[/white]   [dim]Aurora v2.0[/dim]                     ║
 ║    [dim italic]"Las matemáticas también sienten,[/dim italic]                  ║
 ║    [dim italic] pero estas no se equivocan."[/dim italic]                  ║
 ╚══════════════════════════════════════════════════════════╝[/bold orange1]
@@ -31,10 +31,12 @@ BANNER = """
   [cyan]exit[/cyan]     - Salir
   [cyan]cls[/cyan]      - Limpiar pantalla
   
+[dim]Pro Tip:[/dim] Usa [bold]sonify(expr)[/bold] para escuchar funciones o [bold]recta(p1, p2)[/bold] para geometría.
+
 [dim]Ejemplos:[/dim]
-  derivar(x^2 + 3x, x)
-  integrar(sin(x), x)
-  van(0.10, -1000, 300, 400, 500)
+  derivar(cos^2(2x))
+  sonify(sin(440*2*pi*t))
+  distancia((0,0), (1,1))
 """
 
 HELP_TEXT = """
@@ -45,6 +47,13 @@ HELP_TEXT = """
 |---------|---------|
 | `derivar(expr, var)` | `derivar(x^2, x)` → `2*x` |
 | `integrar(expr, var)` | `integrar(sin(x), x)` → `-cos(x)` |
+
+### Audio & Geometría (NUEVO)
+| Función | Ejemplo |
+|---------|---------|
+| `sonify(expr)` | `sonify(sin(440t))` (Genera output.wav) |
+| `distancia(p1, p2)` | `distancia((0,0), (3,4))` → `5` |
+| `recta(p1, p2)` | `recta((0,0), (1,1))` → `y=x` |
 | `limite(expr, var, punto)` | `limite(sin(x)/x, x, 0)` → `1` |
 | `sumatoria(expr, var, a, b)` | `sumatoria(n^2, n, 1, 10)` |
 

@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "binary-equalab"
-version = "1.0.0"
-description = "Command-line CAS calculator with Spanish math functions"
+version = "2.0.0"
+description = "Advanced Algebra & Calculus CLI Tool"
 readme = "README.md"
 license = "MIT"
 authors = [
-    { name = "BinaryEquaLab Team" }
+    { name = "Malexnnn", email = "carde@example.com" }
 ]
 keywords = ["calculator", "cas", "math", "symbolic", "spanish", "algebra", "calculus"]
 classifiers = [
