@@ -18,6 +18,8 @@ from typing import Any, Union, List, Optional
 import re
 
 from .parser_enhanced import EnhancedParser
+from .sonify import AudioEngine
+from .geometry import GeometryEngine
 
 # Symbol shortcuts
 x, y, z, t, n, k = symbols('x y z t n k')
@@ -60,6 +62,17 @@ class MathEngine:
             'depreciar': self._depreciar,
             'interes_simple': self._interes_simple,
             'interes_compuesto': self._interes_compuesto,
+            
+            # Audio / Sonification
+            'sonify': self._sonify,
+            'sonificar': self._sonify,
+
+            # Geometry
+            'distancia': self._distancia,
+            'punto_medio': self._punto_medio,
+            'pendiente': self._pendiente,
+            'recta': self._recta,
+            'circulo': self._circulo,
             
             # Trigonometry aliases
             'seno': sin,
@@ -291,9 +304,9 @@ class MathEngine:
         nums = [float(v) for v in values]
         mean = sum(nums) / len(nums)
         return sum((x - mean) ** 2 for x in nums) / len(nums)
-    
+
     # ============ FINANCE ============
-    
+
     def _van(self, tasa, *flujos):
         """NPV: van(0.10, -1000, 300, 400, 500)"""
         r = float(tasa)
@@ -301,17 +314,17 @@ class MathEngine:
         for i, flujo in enumerate(flujos):
             result += float(flujo) / ((1 + r) ** i)
         return round(result, 2)
-    
+
     def _tir(self, *flujos):
         """IRR: tir(-1000, 300, 400, 500) using Newton-Raphson"""
         flows = [float(f) for f in flujos]
-        
+
         def npv(r):
             return sum(f / ((1 + r) ** i) for i, f in enumerate(flows))
-        
+
         def npv_deriv(r):
             return sum(-i * f / ((1 + r) ** (i + 1)) for i, f in enumerate(flows))
-        
+
         r = 0.1  # Initial guess
         for _ in range(100):
             npv_val = npv(r)
@@ -321,9 +334,9 @@ class MathEngine:
             if deriv == 0:
                 break
             r = r - npv_val / deriv
-        
+
         return round(r * 100, 2)  # Return as percentage
-    
+
     def _depreciar(self, costo, residual, años):
         """Straight-line depreciation: depreciar(10000, 1000, 5)"""
         c, r, n = float(costo), float(residual), int(años)
@@ -337,7 +350,7 @@ class MathEngine:
                 'valor_libro': round(c - annual * (i + 1), 2)
             })
         return schedule
-    
+
     def _interes_simple(self, capital, tasa, tiempo):
         """Simple interest: interes_simple(1000, 0.05, 3)"""
         c, r, t = float(capital), float(tasa), float(tiempo)
@@ -346,7 +359,7 @@ class MathEngine:
             'interes': round(interest, 2),
             'monto_final': round(c + interest, 2)
         }
-    
+
     def _interes_compuesto(self, capital, tasa, n, tiempo):
         """Compound interest: interes_compuesto(1000, 0.05, 12, 3)"""
         c, r, periods, t = float(capital), float(tasa), int(n), float(tiempo)
@@ -356,6 +369,30 @@ class MathEngine:
             'interes': round(monto - c, 2)
         }
 
+    def _distancia(self, p1, p2):
+        geo = GeometryEngine()
+        return geo.distancia(p1, p2)
+
+    def _punto_medio(self, p1, p2):
+        geo = GeometryEngine()
+        return geo.punto_medio(p1, p2)
+
+    def _pendiente(self, p1, p2):
+        geo = GeometryEngine()
+        return geo.pendiente(p1, p2)
+
+    def _recta(self, p1, p2):
+        geo = GeometryEngine()
+        return geo.recta(p1, p2)
+
+    def _circulo(self, centro, radio):
+        geo = GeometryEngine()
+        return geo.circulo(centro, radio)
+
+    def _sonify(self, expr, duration=3.0, filename="output.wav"):
+        """Generate audio from expression: sonify(sin(440*2*pi*t))"""
+        engine = AudioEngine()
+        return engine.generate(str(expr), float(duration), str(filename))
 
 # Convenience functions for direct import
 def derivar(expr, var=None, n=1):
@@ -425,3 +462,31 @@ def desviacion(*values):
 def varianza(*values):
     engine = MathEngine()
     return engine._varianza(*values)
+
+
+
+# ... (Global functions) ...
+
+def distancia(p1, p2):
+    engine = MathEngine()
+    return engine._distancia(p1, p2)
+
+def punto_medio(p1, p2):
+    engine = MathEngine()
+    return engine._punto_medio(p1, p2)
+
+def pendiente(p1, p2):
+    engine = MathEngine()
+    return engine._pendiente(p1, p2)
+
+def recta(p1, p2):
+    engine = MathEngine()
+    return engine._recta(p1, p2)
+
+def circulo(centro, radio):
+    engine = MathEngine()
+    return engine._circulo(centro, radio)
+
+def sonify(expr, duration=3.0, filename="output.wav"):
+    engine = MathEngine()
+    return engine._sonify(expr, duration, filename)

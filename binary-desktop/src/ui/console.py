@@ -11,8 +11,11 @@ cli_path = os.path.join(project_root, "binary-cli")
 if cli_path not in sys.path:
     sys.path.append(cli_path)
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QTextEdit
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QTextEdit
 from PySide6.QtCore import Qt
+
+# Import Keypad
+from .keypad import KeypadWidget
 
 try:
     from binary_equalab.engine import MathEngine
@@ -30,8 +33,16 @@ class ConsoleWidget(QWidget):
         if HAS_ENGINE:
             self.engine = MathEngine()
         
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
+        # Main Layout: Side by Side (Console Left, Keypad Right)
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(10)
+        
+        # --- Left Panel: Console (Output + Input) ---
+        console_container = QWidget()
+        console_layout = QVBoxLayout(console_container)
+        console_layout.setContentsMargins(0, 0, 0, 0)
+        console_layout.setSpacing(10) # Space between output and input
         
         # Output Area (Read-only)
         self.outputArea = QTextEdit()
@@ -41,6 +52,7 @@ class ConsoleWidget(QWidget):
                 background-color: #1a1a1a; 
                 color: #e0e0e0;
                 border: none;
+                border-radius: 8px;
                 font-family: 'Consolas', 'Cascadia Code', monospace;
                 font-size: 14px;
                 padding: 10px;
@@ -56,9 +68,9 @@ class ConsoleWidget(QWidget):
                 color: #EA580C; 
                 border: 1px solid #333;
                 border-radius: 4px;
-                padding: 8px;
+                padding: 12px;
                 font-family: 'Consolas', 'Cascadia Code', monospace;
-                font-size: 14px;
+                font-size: 16px;
                 font-weight: bold;
             }
             QLineEdit:focus {
@@ -66,17 +78,41 @@ class ConsoleWidget(QWidget):
             }
         """)
         
-        layout.addWidget(self.outputArea)
-        layout.addWidget(self.inputLine)
+        console_layout.addWidget(self.outputArea)
+        console_layout.addWidget(self.inputLine)
         
+        # --- Right Panel: Keypad ---
+        self.keypad = KeypadWidget()
+        # Connect Signals
+        self.keypad.text_inserted.connect(self.on_keypad_insert)
+        self.keypad.action_triggered.connect(self.on_keypad_action)
+
         self.inputLine.returnPressed.connect(self.handle_command)
         
-        self.append_output("Binary EquaLab Desktop [Aurora v1.0]", "#EA580C")
+        # Add to main layout
+        main_layout.addWidget(console_container, stretch=3) # Console takes 75%
+        main_layout.addWidget(self.keypad, stretch=1)      # Keypad takes 25%
+        
+        self.append_output("Binary EquaLab Desktop [Aurora v2.0]", "#EA580C")
         if HAS_ENGINE:
             self.append_output("Motor Matemático: CONECTADO ✅", "#10b981")
+            self.append_output("Giac Integration: READY 🚀", "#3b82f6")
         else:
             self.append_output(f"Motor: ERROR DE CONEXIÓN ({IMPORT_ERROR}) ❌", "#ef4444")
             self.append_output(f"Path intentado: {cli_path}", "#888")
+
+    def on_keypad_insert(self, text):
+        self.inputLine.insert(text)
+        self.inputLine.setFocus()
+        
+    def on_keypad_action(self, action):
+        if action == "enter":
+            self.handle_command()
+        elif action == "backspace":
+            self.inputLine.backspace()
+        elif action == "clear":
+            self.inputLine.clear()
+        self.inputLine.setFocus()
 
     def handle_command(self):
         cmd = self.inputLine.text().strip()
@@ -91,9 +127,15 @@ class ConsoleWidget(QWidget):
             return
 
         try:
-            # Execute in Engine
-            result = self.engine.evaluate(cmd)
-            self.append_output(f"= {str(result)}", "#e0e0e0")
+            # Check for sonify special command if engine supports it logic is inside evaluate usually
+            # But let's verify if evaluate handles sonify result properly
+             result = self.engine.evaluate(cmd)
+             if str(result).endswith('.wav'):
+                 # It's an audio file
+                 self.append_output(f"🎵 Audio generado: {result}", "#22d3ee")
+                 # Play sound? (Requires simpleaudio or similar, skipping for now)
+             else:
+                 self.append_output(f"= {str(result)}", "#e0e0e0")
         except Exception as e:
             self.append_output(f"Error: {str(e)}", "#ef4444")
             
