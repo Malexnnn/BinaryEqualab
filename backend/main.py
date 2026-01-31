@@ -241,5 +241,36 @@ async def to_latex(req: ExpressionRequest):
         return MathResponse(result="", success=False, error=str(e))
 
 # ============================================================================
+# ============================================================================
+# AI Endpoints (Kimi K2)
+# ============================================================================
+
+from ai_service import kimi_service
+
+class AIRequest(BaseModel):
+    query: str
+    
+class AIExercisesRequest(BaseModel):
+    topic: str
+    count: Optional[int] = 3
+    difficulty: Optional[str] = "medio"
+
+@app.post("/api/ai/solve")
+async def ai_solve(req: AIRequest):
+    """Solve math problem with AI reasoning."""
+    return await kimi_service.solve_math_problem(req.query)
+
+@app.post("/api/ai/explain")
+async def ai_explain(req: AIRequest):
+    """Explain math concept."""
+    result = await kimi_service.explain_concept(req.query)
+    return {"explanation": result}
+
+@app.post("/api/ai/exercises")
+async def ai_exercises(req: AIExercisesRequest):
+    """Generate practice exercises."""
+    return await kimi_service.generate_exercises(req.topic, req.count, req.difficulty)
+
+# ============================================================================
 # Run with: uvicorn main:app --reload
 # ============================================================================
